@@ -22,6 +22,10 @@ fetch("http://localhost:3000/api/products/" + idUrl) //J'envoie une requete au s
   .then((reponse) => reponse.json())
   .then((ficheProduit) => {
     detailProduit(ficheProduit);
+  })
+  .catch((error) => {
+    // En cas de probleme
+    alert("Error"); // j'ajoute un message d'erreur
   });
 
 // ----------------------------------------------------------------------------
@@ -30,12 +34,17 @@ fetch("http://localhost:3000/api/products/" + idUrl) //J'envoie une requete au s
 
 const detailProduit = (ficheProduit) => {
   //selection de la div qui stock l'image
-  let divImg = document.getElementsByClassName("item__img");
+  let [divImg] = document.getElementsByClassName("item__img");
 
   //une image
   let imgCartProduit = document.createElement("img");
-  imgCartProduit.setAttribute("src", ficheProduit.imageUrl, "alt", ficheProduit.altTxt);
-  divImg[0].appendChild(imgCartProduit);
+  imgCartProduit.setAttribute(
+    "src",
+    ficheProduit.imageUrl,
+    "alt",
+    ficheProduit.altTxt
+  );
+  divImg.appendChild(imgCartProduit);
 
   //le nom
   document.getElementById("title").innerText = ficheProduit.name;
@@ -48,19 +57,17 @@ const detailProduit = (ficheProduit) => {
 
   //option de couleur
   let tableaucolor = ficheProduit.colors;
-
-  let selecteur = document.getElementById ("colors");
+  let selecteur = document.getElementById("colors");
 
   for (let i = 0; i < tableaucolor.length; i++) {
     let optioncolor = tableaucolor[i];
 
-    let selectoption = document.createElement ("option");
-    selectoption.value = optioncolor
-    selectoption.innerHTML = optioncolor
+    let selectoption = document.createElement("option");
+    selectoption.value = optioncolor;
+    selectoption.innerHTML = optioncolor;
 
     selecteur.appendChild(selectoption);
-   
   }
 };
 
-
+//local storage
