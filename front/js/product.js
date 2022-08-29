@@ -12,8 +12,11 @@
 // const leId = new URLSearchParams(leidUrl);
 // console.log(leId);
 
-//const minimisé
+//const minimisé un maximum
 const idUrl = new URLSearchParams(new URL(location.href).search).get("id");
+
+
+
 
 // ----------------------------------------------------------------------------
 /* -----------------------------APPEL A L'API ------------------------------ */
@@ -28,15 +31,15 @@ fetch("http://localhost:3000/api/products/" + idUrl) //J'envoie une requete au s
     alert("Error"); // j'ajoute un message d'erreur
   });
 
-// ----------------------------------------------------------------------------
-/* -----------------------J'INTEGRE LES DONNEE DANS LE HTML------------------- */
-// ----------------------------------------------------------------------------
 
+
+// ----------------------------DECLARATION DES CONSTENTE-------------------------
+/* -----------------------j'integre les donnee dans le html------------------- */
+// ------------------------------------------------------------------------------
 const detailProduit = (ficheProduit) => {
   //selection de la div qui stock l'image
   let [divImg] = document.getElementsByClassName("item__img");
-
-  //une image
+  //j'ajoute une image
   let imgCartProduit = document.createElement("img");
   imgCartProduit.setAttribute(
     "src",
@@ -45,20 +48,15 @@ const detailProduit = (ficheProduit) => {
     ficheProduit.altTxt
   );
   divImg.appendChild(imgCartProduit);
-
-  //le nom
+  //j'ajoute le nom
   document.getElementById("title").innerText = ficheProduit.name;
-
-  // le prix
+  //j'ajoute le prix
   document.getElementById("price").innerText = ficheProduit.price;
-
-  //la descritpion
+  //j'ajoute la descritpion
   document.getElementById("description").innerText = ficheProduit.description;
-
-  //option de couleur
+  //j'ajoute l'option de couleur
   let tableaucolor = ficheProduit.colors;
   let selecteur = document.getElementById("colors");
-
   for (let i = 0; i < tableaucolor.length; i++) {
     let optioncolor = tableaucolor[i];
 
@@ -70,4 +68,21 @@ const detailProduit = (ficheProduit) => {
   }
 };
 
-//local storage
+
+// ----------------------------------------------------------------------------
+/* -----------------------CREATION DU LOCALSTORAGE------------------- */
+// ----------------------------------------------------------------------------
+
+//configuration de l'evenement au clic du bouton
+
+const ajoutPanier = document.querySelector("addToCart")
+
+ajoutPanier.addEventListener("click",function () {
+  
+})
+
+
+let stockagePanier = localStorage;
+
+localStorage.getItem('key', value)
+
