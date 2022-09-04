@@ -15,9 +15,6 @@
 //const minimisé un maximum
 const idUrl = new URLSearchParams(new URL(location.href).search).get("id");
 
-
-
-
 // ----------------------------------------------------------------------------
 /* -----------------------------APPEL A L'API ------------------------------ */
 // ----------------------------------------------------------------------------
@@ -25,13 +22,13 @@ fetch("http://localhost:3000/api/products/" + idUrl) //J'envoie une requete au s
   .then((reponse) => reponse.json())
   .then((ficheProduit) => {
     detailProduit(ficheProduit);
-  })
-  .catch((error) => {
-    // En cas de probleme
-    alert("Error"); // j'ajoute un message d'erreur
+    console.log(ficheProduit);
+    stockagePanier(ficheProduit);
   });
-
-
+// .catch((error) => {
+//   // En cas de probleme
+//   alert("Error"); // j'ajoute un message d'erreur
+// });
 
 // ----------------------------DECLARATION DES CONSTENTE-------------------------
 /* -----------------------j'integre les donnee dans le html------------------- */
@@ -68,21 +65,48 @@ const detailProduit = (ficheProduit) => {
   }
 };
 
-
 // ----------------------------------------------------------------------------
-/* -----------------------CREATION DU LOCALSTORAGE------------------- */
+/* --------------------------CREATION DU LOCALSTORAGE----------------------- */
 // ----------------------------------------------------------------------------
 
-//configuration de l'evenement au clic du bouton
+//creation des variables qui me seront utiles
+let boutonPanier = document.getElementById("addToCart");
+let imageUrl = document.querySelector("item__img");
 
-const ajoutPanier = document.querySelector("addToCart")
+// //configuration de l'evenement au clic du bouton "ajouter au panier"
+const stockagePanier = () => {
+  boutonPanier.addEventListener("click", (event) => {
+    let selectColors = document.getElementById("colors").value;
+    let selectQuantity = document.getElementById("quantity").value;
+    let selectPrix = document.getElementById("price").textContent * selectQuantity;
+    
+    // je prepare l'envoie d'un objet avec la variable "produit"
+    let produits = {
+    id: idUrl,
+    image: imageUrl,
+    name: title.textContent,
+    price: selectPrix,
+    color: selectColors,
+    quantity: selectQuantity,
+    };
+    //je transforme l'objet "produits" en fichier .json avant de l'envoyer dans le localstorage
+    let produitJson = JSON.stringify(produits);
 
-ajoutPanier.addEventListener("click",function () {
-  
-})
+    // ----------------------------------------------------------------------------
+    /* -----------------------j'envoie dans le localstorage--------------------- */
 
+    if (colors.value === "" || quantity.value <= 0 || quantity.value > 100 ) {
+      alert("Choisissez une couleur ou une quantité d'article entre 1 et 100")
+    } else {
+      //j'envoie l'objet dans le localstorage
+      localStorage.setItem("objet", produitJson);
+      alert("Article(s) ajouté au panier avec succes")
+    }
 
-let stockagePanier = localStorage;
+    if (produitJson) {
 
-localStorage.getItem('key', value)
+    } else {
 
+    }
+  });
+};
