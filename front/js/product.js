@@ -1,19 +1,13 @@
-// ----------------------------------------------------------------------------
-/* -----------------------RECUPERATION DE L'ID du produit------------------- */
-// ----------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// -------------------DECLARATION DES CONST et variable------------------------//
+// ------------------------------------------------------------------------------
 
-/*----------------recuperation du lien du produit----------------*/
-// const urlProduit = location.href;
-// console.log(urlProduit);
-
-// /*----------------recuperation de l'id du produit----------------*/
-// const leidUrl = new URL(urlProduit).search;
-// console.log(leidUrl);
-// const leId = new URLSearchParams(leidUrl);
-// console.log(leId);
-
-//const factorisé un maximum
-const idUrl = new URLSearchParams(new URL(location.href).search).get("id");
+//recuperation du lien et de l'id
+//    /*----------------recuperation de l'id du produit----------------*/
+//    const urlProduit = location.href; //je recupere le lien du produit
+//    const leidUrl = new URL(urlProduit).search; //je recherche l'id dans le lien
+//    const leId = new URLSearchParams(leidUrl); //j'extrait l'id.
+const idUrl = new URLSearchParams(new URL(location.href).search).get("id"); //const factorisé un maximum
 
 //creation des variables qui me seront utiles
 let boutonPanier = document.getElementById("addToCart");
@@ -21,29 +15,27 @@ let image = document.querySelector("item__img");
 let imageURL = "";
 let imageAlt = "";
 
-// ----------------------------DECLARATION DES CONSTENTE-------------------------
-/* -----------------------j'integre les donnee dans le html------------------- */
-// ------------------------------------------------------------------------------
-const detailProduit = (ficheProduit) => {
+//j'integre les donnee dans le html
+const detailProduit = (tabPanier) => {
   //selection de la div qui stock l'image
   let [divImg] = document.getElementsByClassName("item__img");
   //j'ajoute une image
   let imgCartProduit = document.createElement("img");
   imgCartProduit.setAttribute(
     "src",
-    ficheProduit.imageUrl,
+    tabPanier.imageUrl,
     "alt",
-    ficheProduit.altTxt
+    tabPanier.altTxt
   );
   divImg.appendChild(imgCartProduit);
   //j'ajoute le nom
-  document.getElementById("title").innerText = ficheProduit.name;
+  document.getElementById("title").innerText = tabPanier.name;
   //j'ajoute le prix
-  document.getElementById("price").innerText = ficheProduit.price;
+  document.getElementById("price").innerText = tabPanier.price;
   //j'ajoute la descritpion
-  document.getElementById("description").innerText = ficheProduit.description;
+  document.getElementById("description").innerText = tabPanier.description;
   //j'ajoute l'option de couleur
-  let tableaucolor = ficheProduit.colors;
+  let tableaucolor = tabPanier.colors;
   let selecteur = document.getElementById("colors");
   for (let i = 0; i < tableaucolor.length; i++) {
     let optioncolor = tableaucolor[i];
@@ -59,20 +51,14 @@ const detailProduit = (ficheProduit) => {
   /* --------------------------CREATION DU LOCALSTORAGE----------------------- */
   // ----------------------------------------------------------------------------
 
-  // //configuration de l'evenement au clic du bouton "ajouter au panier"
+  //configuration de l'evenement au clic du bouton "ajouter au panier"
   boutonPanier.addEventListener("click", (event) => {
     let selectColors = document.getElementById("colors").value;
     let selectQuantity = document.getElementById("quantity").value;
-    let selectPrix =
-      document.getElementById("price").textContent * selectQuantity;
 
     // je prepare l'envoie d'un objet avec la variable "produit"
     let produit = {
       id: idUrl,
-      image: imageURL,
-      alt: imageAlt,
-      name: title.textContent,
-      price: selectPrix,
       color: selectColors,
       quantity: selectQuantity,
     };
@@ -84,72 +70,57 @@ const detailProduit = (ficheProduit) => {
       //si l'utilisateur fais une mauvaise saisie
       alert("Choisissez une couleur ou une quantité d'article entre 1 et 100"); //alors il aura une alerte pour corriger
     } else {
-      ajoutProduit(produit);
-      alert("Article(s) ajouté au panier avec succes"); //je fais une alerte a l'utilisateur pour confirmer l'envoie au localstorage
+      //sinon j'enregistre dans le localstorage
+      ajoutProduit(produit); //j'appel ma fonction qui ajoute la saisie dans le localstorage
+      alert("Article(s) ajouté au panier avec succes"); //je fais une alerte a l'utilisateur pour confirmer l'ajout au panier (l'envoie au localstorage)
     }
   });
 };
 
-function ajoutProduit(produit) {
-  const kCartKey = "cart";
-  // Je recupère mon cart depuis le local storage
-  const rawCart = localStorage.getItem(kCartKey); // type: String
-  // Comme le localstorage retourne une value de type string
-  // Je transofrme l'object JSON en un object Javascript
-  // Si jamais rawCart était "null", alors j'ai un object vide en valeur par defaut
-  const cart = JSON.parse(rawCart) || {};
+// je crée une fonction unique qui me permet de stocké le contenu dans un object
+const getUniqueKey = (produit) => {
+  return produit.id + "-" + produit.color; // cette variable me retourne l'ID et la coleur
+};
 
-  // je crée une variable unique qui me permet de stocké le contenu dans un object
-  // cette variable en composé de l'ID et la color
+//je crée une fonction pour gerer le stockage dans le localstorage
+const ajoutProduit = (produit) => {
+  const sousPanier = "commande";
+  // Je prépare ma recupération de ma clé "commande" depuis le local storage
+
+  const commande = JSON.parse(localStorage.getItem(sousPanier)) || {};
+  // le localstorage retourne ma clé en type string que je transforme du format JSON au format Javascript
+  // Si "panierBrut" était "null", alors j'ai un object vide en valeur par defaut
+
   const uniqueKey = getUniqueKey(produit);
+  //j'appel ma fonction créer pour stocké l'id et la couleur
+
+  let produitExistant = commande[uniqueKey];
   // J'essaie d'acceder à mon produit
-  let existingProduit = cart[uniqueKey];
 
-  if (existingProduit) {
-    // si le produit existe on le modifie
-    // en incrémentant quantity
-    const newCount =
-      Number(existingProduit.quantity) + Number(produit.quantity);
-    existingProduit.quantity = newCount.toString();
-    cart[uniqueKey] = existingProduit;
+  //je crée un condition pour vérifier si le produit existe
+  if (produitExistant) {
+    // si le produit existe avec l'id et la meme couleur
+    const newQuantity =
+      Number(produitExistant.quantity) + Number(produit.quantity); // j'incrémentant les quantité, j'utilise "number" pour transformer le string en nombre
+    produitExistant.quantity = newQuantity.toString(); //puis je repase le nombre en string
+    commande[uniqueKey] = produitExistant;
   } else {
-    cart[uniqueKey] = produit;
+    //sinon je rajoute un nouveau produit au localstorage
+    commande[uniqueKey] = produit;
   }
-
-  // Sans oublier de sauvegarder l'intégralité du cart
-  // dans notre beau petit localstorage
-  localStorage.setItem(kCartKey, JSON.stringify(cart));
-}
-
-function getUniqueKey(produit) {
-  return produit.color + "-" + produit.id;
-}
+  //Je
+  localStorage.setItem(sousPanier, JSON.stringify(commande));
+};
 
 // ----------------------------------------------------------------------------
 /* -----------------------------APPEL A L'API ------------------------------ */
 // ----------------------------------------------------------------------------
 fetch("http://localhost:3000/api/products/" + idUrl) //J'envoie une requete au serveur avec l'id et me renvoie une promesse
   .then((reponse) => reponse.json())
-  .then((ficheProduit) => {
-    detailProduit(ficheProduit);
-    imageURL = ficheProduit.imageUrl;
-    imageAlt = ficheProduit.altTxt;
-    console.log(ficheProduit);
+  .then((tabPanier) => {
+    detailProduit(tabPanier);
   })
   .catch((error) => {
     // En cas de probleme
     alert("Error"); // j'ajoute un message d'erreur
   });
-
-// new approach
-
-/**
- * @description Add a product to the cart
- * @param {object} product - the product object
- * @returns {void}
- */
-
-/**
- * @param {object} produit - the shit we fu**in sell
- * @returns {string} A unique identifier
- */

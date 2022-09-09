@@ -1,23 +1,3 @@
-// ----------------------
-// Communication avec API
-// ----------------------
-
-//J'envoie une requete au serveur distant et me renvoie une promesse
-fetch("http://localhost:3000/api/products")
-  .then((reponse) => reponse.json())
-  .then((dataProduit) => {
-    //Avec ma 2eme promise ".then", les données reçu avec la fonction "dataProduit"
-    //et affiché sur le site dans ma fonction "affichageProduit" (déclaré plus bas)
-    affichageProduit(dataProduit);
-  })
-  .catch((error) => {
-    // En cas de probleme
-    // j'ajoute un message d'erreur
-    alert("Error");
-  });
-
-
-  
 // ------------------------------------------------
 // Affichage des produits dans la page HTML "index"
 // ------------------------------------------------
@@ -59,3 +39,20 @@ const affichageProduit = (dataProduit) => {
     articleProduit.appendChild(descriptionProduit); //je déclare "article" comme etant le parent de "p"
   }
 };
+// ----------------------
+// Communication avec API
+// ----------------------
+
+//J'envoie une requete au serveur distant et me renvoie une promesse
+fetch("http://localhost:3000/api/products")
+  .then((reponse) => reponse.json())
+  .then((dataProduit) => {
+    //Avec ma 2eme promise ".then", les données reçu avec la fonction "dataProduit"
+    //et affiché sur le site dans ma fonction "affichageProduit" (déclaré plus bas)
+    affichageProduit(dataProduit);
+  })
+  .catch((error) => {
+    // En cas de probleme
+    // j'ajoute un message d'erreur
+    alert("Error");
+  });
