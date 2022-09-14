@@ -7,7 +7,10 @@
 //    const urlProduit = location.href; //je recupere le lien du produit
 //    const leidUrl = new URL(urlProduit).search; //je recherche l'id dans le lien
 //    const leId = new URLSearchParams(leidUrl); //j'extrait l'id.
-const idUrl = new URLSearchParams(new URL(location.href).search).get("id"); //const factorisé un maximum
+
+//const factorisé un maximum
+const idUrl = new URLSearchParams(new URL(location.href).search).get("id"); 
+
 
 //creation des variables qui me seront utiles
 let boutonPanier = document.getElementById("addToCart");
@@ -108,7 +111,7 @@ const ajoutProduit = (produit) => {
     //sinon je rajoute un nouveau produit au localstorage
     commande[uniqueKey] = produit;
   }
-  //Je
+  //Jemet un jour mon local storage
   localStorage.setItem(sousPanier, JSON.stringify(commande));
 };
 
