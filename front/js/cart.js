@@ -106,7 +106,7 @@ const addPanier = () => {
         let [btnSupprimer] = article.getElementsByClassName("deleteItem")
 
          //j'appel ma fonction pour supprimer un article du panier
-        supPanier(btnSupprimer)
+        supPanier(btnSupprimer, tabPanier._id, panier.color)
 
         // --------------------------------------------------------------------
         // --------------------------------------------------------------------
@@ -119,12 +119,33 @@ const addPanier = () => {
   }
 };
 
+function supPanier(btnSupprimer, id, color) {
+  console.log(btnSupprimer, id, color);
+  //j'ecouter l'evenement au clic sur le bouton supprimer
+  btnSupprimer.addEventListener('click', function () {
+    console.log(btnSupprimer);
+    deleteStorage(id, color)
+    btnSupprimer.closest("article").remove()
+  })
+}
+
+function deleteStorage (id, color){
+  //je recupere les info du local storage
+  let deleteCommand = recupStorage()
+  let tabDeleteCommand = Object.values(deleteCommand)
+  let newCart = []
+  tabDeleteCommand.forEach(item => {
+    if(item.id != id || item.color != color) {
+      newCart.push(item)
+    }
+  })
+  localStorage.setItem(monStorage, JSON.stringify(newCart));
+}
+
 //j'appel ma fonction
 addPanier();
 
-
 //je crée ma fonction qui va contenir mon action
-// rename: attachOnChange
 function modifPanier (canap, id, color) {
   //j'ecouter l'evenement a la modification de "value"
   canap.addEventListener('change', function (event) {
@@ -137,44 +158,12 @@ function modifPanier (canap, id, color) {
   })
 }
 
-
-
-function supPanier (btnSupprimer) {
-  //j'ecouter l'evenement au clic sur le bouton supprimer
-  btnSupprimer.addEventListener('click', function () {
-    console.log(btnSupprimer);
-
-
-
-    deleteStorage()
-  })
-}
-
-function deleteStorage (){
-  //je recupere les info du local storage
-  let deleteCommand = recupStorage()
-  console.log(deleteCommand);
-
-      //-------- espace reflexion-------------
-    //le bouton = false -- par default le bouton = false
-    //si clic bouton
-            //alors le bouton = true
-    //si bouton = true
-            //alors je delete l'id et colour du local storage
-    //je met a jour le local storage
-
-
-
-}
-
 //fonction pour appeller le contenu de mon localstorage
-// rename: getStoreCommands
 function recupStorage () {
   return JSON.parse(localStorage.getItem(monStorage))
 }
 
 //fonction pour mettre a jour mon local storage
-// updateStoredCommands
 function majStorage (id, color, newqty) {
   // - recuprer les commands
   let commandes = recupStorage();
