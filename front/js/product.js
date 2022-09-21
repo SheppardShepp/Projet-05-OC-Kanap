@@ -1,16 +1,17 @@
 // ------------------------------------------------------------------------------
-// -------------------DECLARATION DES CONST et variable------------------------//
+// ------------------- DECLARATION DES CONST ET VARIABLE --------------------------
 // ------------------------------------------------------------------------------
 
-//recuperation du lien et de l'id
-//    /*----------------recuperation de l'id du produit----------------*/
-//    const urlProduit = location.href; //je recupere le lien du produit
-//    const leidUrl = new URL(urlProduit).search; //je recherche l'id dans le lien
-//    const leId = new URLSearchParams(leidUrl); //j'extrait l'id.
+//recuperation du lien
+    //const urlProduit = location.href;
+//recuperation de l'id
+  //je recherche l'id dans le lien
+    //const leidUrl = new URL(urlProduit).search;
+  //j'extrait l'id.  
+    //const leId = new URLSearchParams(leidUrl);
 
-//const factorisé un maximum
+//const factorisé
 const idUrl = new URLSearchParams(new URL(location.href).search).get("id"); 
-
 
 //creation des variables qui me seront utiles
 let boutonPanier = document.getElementById("addToCart");
@@ -18,18 +19,33 @@ let image = document.querySelector("item__img");
 let imageURL = "";
 let imageAlt = "";
 
-//j'integre les donnee dans le html
+// ----------------------------------------------------------------------------
+// --------------------------- APPEL A L'API ----------------------------------
+// ----------------------------------------------------------------------------
+
+fetch("http://localhost:3000/api/products/" + idUrl)
+//J'envoie une requete au serveur avec l'id et me renvoie une promesse
+  .then((reponse) => reponse.json())
+  .then((tabPanier) => {
+    //j'appel ma fonction que m'affichera les details dans la page html
+    detailProduit(tabPanier);
+  })
+  // En cas de probleme
+  .catch((error) => {
+    // j'ajoute un message d'erreur
+    alert("Error"); 
+  });
+
+// ----------------------------------------------------------------------------
+// ----------------------- CREATION DES FONCTIONS -----------------------------
+// ----------------------------------------------------------------------------
+
 const detailProduit = (tabPanier) => {
   //selection de la div qui stock l'image
   let [divImg] = document.getElementsByClassName("item__img");
   //j'ajoute une image
   let imgCartProduit = document.createElement("img");
-  imgCartProduit.setAttribute(
-    "src",
-    tabPanier.imageUrl,
-    "alt",
-    tabPanier.altTxt
-  );
+  imgCartProduit.setAttribute("src", tabPanier.imageUrl, "alt", tabPanier.altTxt);
   divImg.appendChild(imgCartProduit);
   //j'ajoute le nom
   document.getElementById("title").innerText = tabPanier.name;
@@ -42,23 +58,16 @@ const detailProduit = (tabPanier) => {
   let selecteur = document.getElementById("colors");
   for (let i = 0; i < tableaucolor.length; i++) {
     let optioncolor = tableaucolor[i];
-
     let selectoption = document.createElement("option");
     selectoption.value = optioncolor;
     selectoption.innerHTML = optioncolor;
-
     selecteur.appendChild(selectoption);
   }
-
-  // ----------------------------------------------------------------------------
-  /* --------------------------CREATION DU LOCALSTORAGE----------------------- */
-  // ----------------------------------------------------------------------------
 
   //configuration de l'evenement au clic du bouton "ajouter au panier"
   boutonPanier.addEventListener("click", (event) => {
     let selectColors = document.getElementById("colors").value;
     let selectQuantity = document.getElementById("quantity").value;
-
     // je prepare l'envoie d'un objet avec la variable "produit"
     let produit = {
       id: idUrl,
@@ -66,64 +75,59 @@ const detailProduit = (tabPanier) => {
       quantity: selectQuantity,
     };
 
-    /* -----------------------j'envoie dans le localstorage--------------------- */
-
-    //-----je fais une condition pour verifier la saisie de l'utilisateur------
+    //----------------------------------------------------------------------------
+    //------ je fais une condition pour verifier la saisie de l'utilisateur ------
+    //----------------------------------------------------------------------------
+    //si l'utilisateur fais une mauvaise saisie
     if (colors.value === "" || quantity.value <= 0 || quantity.value > 100) {
-      //si l'utilisateur fais une mauvaise saisie
-      alert("Choisissez une couleur ou une quantité d'article entre 1 et 100"); //alors il aura une alerte pour corriger
+       //alors il aura une alerte pour corriger
+      alert("Choisissez une couleur ou une quantité d'article entre 1 et 100");
     } else {
-      //sinon j'enregistre dans le localstorage
-      ajoutProduit(produit); //j'appel ma fonction qui ajoute la saisie dans le localstorage
-      alert("Article(s) ajouté au panier avec succes"); //je fais une alerte a l'utilisateur pour confirmer l'ajout au panier (l'envoie au localstorage)
+      //sinon j'appel ma fonction qui enregistre dans le localstorage
+      ajoutProduit(produit);
+      //je fais une alerte a l'utilisateur pour confirmer l'ajout au panier (l'envoie au localstorage)
+      alert("Article(s) ajouté au panier avec succes"); 
     }
   });
 };
 
+// ----------------------------------------------------------------------------
+//-------------------------- ENVOIE AU LOCAL STORAGE --------------------------
+// ----------------------------------------------------------------------------
+
 // je crée une fonction unique qui me permet de stocké le contenu dans un object
 const getUniqueKey = (produit) => {
-  return produit.id + "-" + produit.color; // cette variable me retourne l'ID et la coleur
+  // cette variable me retourne l'ID et la coleur
+  return produit.id + "-" + produit.color; 
 };
 
 //je crée une fonction pour gerer le stockage dans le localstorage
 const ajoutProduit = (produit) => {
-  const sousPanier = "commande";
   // Je prépare ma recupération de ma clé "commande" depuis le local storage
+  const keyStorage = "commande";
 
-  const commande = JSON.parse(localStorage.getItem(sousPanier)) || {};
+  const commande = JSON.parse(localStorage.getItem(keyStorage)) || {};
   // le localstorage retourne ma clé en type string que je transforme du format JSON au format Javascript
-  // Si "panierBrut" était "null", alors j'ai un object vide en valeur par defaut
+    // Si "panierBrut" était "null", alors j'ai un object vide en valeur par defaut
 
-  const uniqueKey = getUniqueKey(produit);
   //j'appel ma fonction créer pour stocké l'id et la couleur
+  const uniqueKey = getUniqueKey(produit);
 
-  let produitExistant = commande[uniqueKey];
-  // J'essaie d'acceder à mon produit
+  // J'acceder à mon produit
+   let produitExistant = commande[uniqueKey];
 
-  //je crée un condition pour vérifier si le produit existe
-  if (produitExistant) {
+  //je crée une condition pour vérifier si le produit existe déjà
     // si le produit existe avec l'id et la meme couleur
-    const newQuantity =
-      Number(produitExistant.quantity) + Number(produit.quantity); // j'incrémentant les quantité, j'utilise "number" pour transformer le string en nombre
-    produitExistant.quantity = newQuantity.toString(); //puis je repase le nombre en string
+  if (produitExistant) {
+    //ALORS j'incrémentant les quantités, j'utilise "number" pour transformer le string en nombre
+    const newQuantity = Number(produitExistant.quantity) + Number(produit.quantity);
+    //puis je repasse le nombre en string
+    produitExistant.quantity = newQuantity.toString();
     commande[uniqueKey] = produitExistant;
   } else {
     //sinon je rajoute un nouveau produit au localstorage
     commande[uniqueKey] = produit;
   }
-  //Jemet un jour mon local storage
-  localStorage.setItem(sousPanier, JSON.stringify(commande));
+  //Je met un jour mon local storage
+  localStorage.setItem(keyStorage, JSON.stringify(commande));
 };
-
-// ----------------------------------------------------------------------------
-/* -----------------------------APPEL A L'API ------------------------------ */
-// ----------------------------------------------------------------------------
-fetch("http://localhost:3000/api/products/" + idUrl) //J'envoie une requete au serveur avec l'id et me renvoie une promesse
-  .then((reponse) => reponse.json())
-  .then((tabPanier) => {
-    detailProduit(tabPanier);
-  })
-  .catch((error) => {
-    // En cas de probleme
-    alert("Error"); // j'ajoute un message d'erreur
-  });

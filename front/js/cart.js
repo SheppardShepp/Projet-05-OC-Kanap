@@ -1,34 +1,34 @@
 // ----------------------------------------------------------------------------
 /* -------------------------APPEL AU LOCAL STORAGE-------------------------- */
 // ----------------------------------------------------------------------------
-
-const monStorage = "commande";
+const keyStorage = "commande";
 // Je prépare ma recupération de ma clé "commande" depuis le local storage
 
-const commande = JSON.parse(localStorage.getItem(monStorage)) || {};
+const commande = JSON.parse(localStorage.getItem(keyStorage)) || {};
 // le localstorage retourne ma clé en type string que je transforme du format JSON au format Javascript
 // Si "panierBrut" était "null", alors j'ai un object vide en valeur par defaut
 
 let tabCmd = Object.values(commande);
 //Object.values me renvoie un tableau de l'objet "commande"
 
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
 
-
-//variable necessaire pour le total du panier
-//j'identify mes 2 id de la page html
+// ----------------------------------------------------------------------------
+/* -------------------------APPEL AU LOCAL STORAGE-------------------------- */
+// ----------------------------------------------------------------------------
 let totalQty = document.querySelector("#totalQuantity");
 let totalPrice = document.querySelector("#totalPrice");
+//variable necessaire pour le total du panier
+//j'identify mes 2 id de la page html
 
-//variable necessaire pour le calcul du panier
 let panierTotalPrix = 0;
 let panierTotalQuantité = 0;
+//variable necessaire pour le calcul du panier
 
 
 // ----------------------------------------------------------------------------
-/* --------------------INTEGRATION DANS LA PAGE HTML------------------------ */
+/* ------------------------DECLARATION DES FONCTIONS------------------------ */
 // ----------------------------------------------------------------------------
+//Fonction de création du panier
 const addPanier = () => {
   //je créer une fonction qui recupere les informations dans le local storage, et dans l'api
   //je recupere dans le localstrorage l'id, la couleur et la quantité
@@ -106,7 +106,7 @@ const addPanier = () => {
         let [btnSupprimer] = article.getElementsByClassName("deleteItem")
 
          //j'appel ma fonction pour supprimer un article du panier
-        supPanier(btnSupprimer, tabPanier._id, panier.color)
+         deletePanier(btnSupprimer, tabPanier._id, panier.color)
 
         // --------------------------------------------------------------------
         // --------------------------------------------------------------------
@@ -118,34 +118,10 @@ const addPanier = () => {
       });
   }
 };
-
-function supPanier(btnSupprimer, id, color) {
-  console.log(btnSupprimer, id, color);
-  //j'ecouter l'evenement au clic sur le bouton supprimer
-  btnSupprimer.addEventListener('click', function () {
-    console.log(btnSupprimer);
-    deleteStorage(id, color)
-    btnSupprimer.closest("article").remove()
-  })
-}
-
-function deleteStorage (id, color){
-  //je recupere les info du local storage
-  let deleteCommand = recupStorage()
-  let tabDeleteCommand = Object.values(deleteCommand)
-  let newCart = []
-  tabDeleteCommand.forEach(item => {
-    if(item.id != id || item.color != color) {
-      newCart.push(item)
-    }
-  })
-  localStorage.setItem(monStorage, JSON.stringify(newCart));
-}
-
 //j'appel ma fonction
 addPanier();
 
-//je crée ma fonction qui va contenir mon action
+//fonction pour la modification du panier
 function modifPanier (canap, id, color) {
   //j'ecouter l'evenement a la modification de "value"
   canap.addEventListener('change', function (event) {
@@ -158,9 +134,38 @@ function modifPanier (canap, id, color) {
   })
 }
 
+//fonction pour la suppression d'un article du panier
+function deletePanier(btnSupprimer, id, color) {
+  //j'ecouter l'evenement au clic sur le bouton supprimer
+  btnSupprimer.addEventListener('click', function () {
+    deleteStorage(id, color)
+    btnSupprimer.closest("article").remove(commande)
+  })
+}
+
+//fonction pour supprimer un article du panier
+function deleteStorage (id, color){
+  //je recupere un objet avec les info du local storage
+  let deleteCommand = recupStorage()
+  //je converti l'objet de mon local en tableau
+  let tabDeleteCommand = Object.entries(deleteCommand)
+
+  let newCart = {}
+  tabDeleteCommand.forEach(([uniqueKey, item]) => {
+    if(item.id != id || item.color != color) {
+      newCart[uniqueKey] = item 
+    }
+    // let objetTabDeleteCommand = Object.assign({}, tabDeleteCommand);
+    //   console.log(objetTabDeleteCommand);
+    localStorage.setItem(keyStorage, JSON.stringify(newCart));
+
+  })
+  updateDom(newCart); 
+}
+
 //fonction pour appeller le contenu de mon localstorage
 function recupStorage () {
-  return JSON.parse(localStorage.getItem(monStorage))
+  return JSON.parse(localStorage.getItem(keyStorage))
 }
 
 //fonction pour mettre a jour mon local storage
@@ -175,11 +180,12 @@ function majStorage (id, color, newqty) {
   // - update les commandes
   commandes[uniqueKey] = commande;
   // - mettre a jour le local storage
-  localStorage.setItem(monStorage, JSON.stringify(commandes));
+  localStorage.setItem(keyStorage, JSON.stringify(commandes));
 
   return commandes;
 }
 
+//fonction pour la mise a jour du DOM
 function updateDom (commandes) {
   let cmds = Object.values(commandes)
   let ttStorageQty = 0;
@@ -204,4 +210,75 @@ function updateDom (commandes) {
 }
 
 
+// --------------------------------------------------------------------
+/* -----------------------GESTION DU FORMULAIRE--------------------- */
+// --------------------------------------------------------------------
+let regexText = new RegExp("^[A-zÀ-ú \-]+$");
+let regexAdress = new RegExp("^[0-9a-zA-Zà-ú '-._]{5,100}$");
+let regexEmail = new RegExp("^[a-zA-Z0-9_.-]+@{1}[a-zA-Z.-_]+[.]{1}[a-z]{2,10}$");
 
+//j'identifie le formulaire
+let prenom = document.getElementById("firstName");
+let prenomInput = prenom.addEventListener("change", function () {
+  validForm(prenom, regexText);
+})
+
+let nom = document.getElementById("lastName");
+let nomInput = nom.addEventListener("change", function () {
+  validForm(nom, regexText);
+})
+
+let adresse = document.getElementById("address");
+let adressInput = adresse.addEventListener("change", function () {
+  validForm(adresse, regexAdress);
+})
+
+let ville = document.getElementById("city");
+let villeInput = ville.addEventListener("change", function () {
+  validForm(ville, regexText);
+})
+
+let mail = document.getElementById("email");
+let mailInput = mail.addEventListener("change", function () {
+  validForm(mail, regexEmail);
+})
+
+// ********************* fonction formulaire *****************************
+const validForm = (input, regex) =>{
+  let testSaisieInput = regex.test(input.value);
+  let messError = input.nextElementSibling;
+  if (testSaisieInput) {
+    messError.innerHTML = "Saisie validé."; 
+    messError.style.color = "green";
+
+  }else {
+    messError.innerHTML = "Saisie non valide. Merci de vérifier votre saisie.";
+    messError.style.color = "red";
+  }
+};
+
+
+// --------------------------------------------------------------------
+/* -----------------------CONFIRMATION COMMANDE--------------------- */
+// --------------------------------------------------------------------
+let btnCommander = document.getElementById("order");
+
+btnCommander.addEventListener ("click", function () {
+
+
+  //création de l'objet qui contient les infos clients
+  let coordonnées = {
+    firstName: prenom.value,
+    lastName: nom.value,
+    address: adresse.value,
+    city: ville.value,
+    email: mail.value,
+  };
+  //mon tableau de produit dans le local storage
+  let produits = Object.values(recupStorage())
+  //je créer mon objet "contact"
+  const contact = {coordonnées, produits}
+
+  //j'envoie les donnée au serveur
+
+})
