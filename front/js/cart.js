@@ -113,7 +113,7 @@ const addPanier = () => {
       })
       .catch((error) => {
         // En cas de probleme
-        // j'ajoute un message d'erreur dans al colsole log qui me renvera l'erreur en question.
+        // j'ajoute un message d'erreur dans la console qui me renvera l'erreur en question.
         console.log(error); 
       });
   }
@@ -216,31 +216,37 @@ function updateDom (commandes) {
 let regexText = new RegExp("^[A-zÀ-ú \-]+$");
 let regexAdress = new RegExp("^[0-9a-zA-Zà-ú '-._]{5,100}$");
 let regexEmail = new RegExp("^[a-zA-Z0-9_.-]+@{1}[a-zA-Z.-_]+[.]{1}[a-z]{2,10}$");
-
+let validator = {
+  prenom: false, 
+  nom: false, 
+  address: false, 
+  ville: false, 
+  email: false
+}
 //j'identifie le formulaire
 let prenom = document.getElementById("firstName");
 let prenomInput = prenom.addEventListener("change", function () {
-  validForm(prenom, regexText);
+  validator.prenom = validForm(prenom, regexText);
 })
 
 let nom = document.getElementById("lastName");
 let nomInput = nom.addEventListener("change", function () {
-  validForm(nom, regexText);
+  validator.nom = validForm(nom, regexText);
 })
 
 let adresse = document.getElementById("address");
 let adressInput = adresse.addEventListener("change", function () {
-  validForm(adresse, regexAdress);
+  validator.address = validForm(adresse, regexAdress);
 })
 
 let ville = document.getElementById("city");
 let villeInput = ville.addEventListener("change", function () {
-  validForm(ville, regexText);
+  validator.ville = validForm(ville, regexText);
 })
 
 let mail = document.getElementById("email");
 let mailInput = mail.addEventListener("change", function () {
-  validForm(mail, regexEmail);
+  validator.email = validForm(mail, regexEmail);
 })
 
 // ********************* fonction formulaire *****************************
@@ -248,26 +254,29 @@ const validForm = (input, regex) =>{
   let testSaisieInput = regex.test(input.value);
   let messError = input.nextElementSibling;
   if (testSaisieInput) {
-    messError.innerHTML = "Saisie validé."; 
+    messError.textContent = "Saisie validé."; 
     messError.style.color = "green";
 
   }else {
-    messError.innerHTML = "Saisie non valide. Merci de vérifier votre saisie.";
+    messError.textContent = "Saisie non valide. Merci de vérifier votre saisie.";
     messError.style.color = "red";
   }
+  return testSaisieInput
 };
-
-
 // --------------------------------------------------------------------
 /* -----------------------CONFIRMATION COMMANDE--------------------- */
 // --------------------------------------------------------------------
+
+document.querySelectorAll('form').forEach(form => {
+  form.addEventListener('submit', (e) => {
+    e.preventDefault()
+  })
+})
+
 let btnCommander = document.getElementById("order");
-
 btnCommander.addEventListener ("click", function () {
-
-
   //création de l'objet qui contient les infos clients
-  let coordonnées = {
+  let contact = {
     firstName: prenom.value,
     lastName: nom.value,
     address: adresse.value,
@@ -275,10 +284,38 @@ btnCommander.addEventListener ("click", function () {
     email: mail.value,
   };
   //mon tableau de produit dans le local storage
-  let produits = Object.values(recupStorage())
+  let storage = Object.values(recupStorage())
+  let products = []
+  for (let i = 0; i < storage.length; i++) {
+    const idProduit = storage[i].id;
+    products.push(idProduit)
+  }
+
   //je créer mon objet "contact"
-  const contact = {coordonnées, produits}
+  const objetContact = {contact, products}
+  console.log(objetContact);
 
-  //j'envoie les donnée au serveur
-
+  //*************j'envoie les donnée au serveur*****************
+  if (!validator.prenom || !validator.nom || !validator.address || !validator.ville || !validator.email) {
+    //ALORS j'envoie une alerte a l'utilisateur
+    alert("Merci de respecter les champs de saisie.")  
+    //SINON
+  }else {
+    fetch("http://localhost:3000/api/products/order", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(objetContact)
+  })
+    .then((reponse) => reponse.json())
+    .then((data) => {
+    document.location.href = "./confirmation.html?id=" + data.orderId;
+    })
+    .catch((error) => {
+      // En cas de probleme
+      // j'ajoute un message d'erreur dans le consolequi me renvera l'erreur en question.
+      console.log(error); 
+    });
+  }
 })
