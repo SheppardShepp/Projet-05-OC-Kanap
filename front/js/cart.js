@@ -117,6 +117,7 @@ const addPanier = () => {
         console.log(error); 
       });
   }
+  updateDom(tabCmd)
 };
 //j'appel ma fonction
 addPanier();
@@ -189,24 +190,32 @@ function majStorage (id, color, newqty) {
 function updateDom (commandes) {
   let cmds = Object.values(commandes)
   let ttStorageQty = 0;
-  let ttStoragePrix= 0;
+  let ttStoragePrix = 0;
+
+    //ajout du prix global dans le html
+    totalPrice.textContent = ttStoragePrix
+
 
   for (let i = 0; i < cmds.length; i++) {
     const { id, quantity } = cmds[i];
     //Calcul de quantité de produit du panier
     ttStorageQty += parseInt(quantity);
+    // if (ttStorageQty === 0 || ttStorageQty === null) {
+    //   ttStoragePrix
+    // }
 
     //calcul du prix de chaque article dans le panier
     fetch("http://localhost:3000/api/products/" + id)
     .then((reponse) => reponse.json())
     .then((canapProduit) => {
       ttStoragePrix += quantity * canapProduit.price
-      //ajout du prix global dans le html
       totalPrice.textContent = ttStoragePrix
     })
   }
-  //ajout des quantité globale au html
-  totalQty.textContent = ttStorageQty
+
+    //ajout des quantité globale au html
+    totalQty.textContent = ttStorageQty
+
 }
 
 
@@ -293,7 +302,6 @@ btnCommander.addEventListener ("click", function () {
 
   //je créer mon objet "contact"
   const objetContact = {contact, products}
-  console.log(objetContact);
 
   //*************j'envoie les donnée au serveur*****************
   if (!validator.prenom || !validator.nom || !validator.address || !validator.ville || !validator.email) {
