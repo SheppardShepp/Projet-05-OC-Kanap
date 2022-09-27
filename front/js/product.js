@@ -3,16 +3,16 @@
 // ---------------------------------------------------------------------------------------------------------------------------------
 
 //recuperation du lien
-  //const urlProduit = location.href;
+//const urlProduit = location.href;
 
 //recuperation de l'id
-  //je recherche l'id dans le lien
-    //const leidUrl = new URL(urlProduit).search;
-  //j'extrait l'id.  
-    //const leId = new URLSearchParams(leidUrl);
+//je recherche l'id dans le lien
+//const leidUrl = new URL(urlProduit).search;
+//j'extrait l'id.
+//const leId = new URLSearchParams(leidUrl);
 
 //const factorisé
-const idUrl = new URLSearchParams(new URL(location.href).search).get("id"); 
+const idUrl = new URLSearchParams(new URL(location.href).search).get("id");
 
 //creation des variables qui me seront utiles
 let boutonPanier = document.getElementById("addToCart");
@@ -24,7 +24,6 @@ let imageAlt = "";
 // ----------------------------------------------------- APPEL A L'API -------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------------------------------------
 
-
 //J'envoie une requete au serveur avec l'id et me renvoie une promesse
 fetch("http://localhost:3000/api/products/" + idUrl)
   .then((reponse) => reponse.json())
@@ -35,7 +34,7 @@ fetch("http://localhost:3000/api/products/" + idUrl)
   // En cas de probleme
   .catch((error) => {
     // j'ajoute un message d'erreur
-    alert("Error"); 
+    alert("Error");
   });
 
 // ---------------------------------------------------------------------------------------------------------------------------------
@@ -50,7 +49,12 @@ const detailProduit = (tabPanier) => {
   let [divImg] = document.getElementsByClassName("item__img");
   //j'ajoute une image au DOM
   let imgCartProduit = document.createElement("img");
-  imgCartProduit.setAttribute("src", tabPanier.imageUrl, "alt", tabPanier.altTxt);
+  imgCartProduit.setAttribute(
+    "src",
+    tabPanier.imageUrl,
+    "alt",
+    tabPanier.altTxt
+  );
   divImg.appendChild(imgCartProduit);
   //j'ajoute le nom
   document.getElementById("title").innerText = tabPanier.name;
@@ -83,13 +87,13 @@ const detailProduit = (tabPanier) => {
 
     //si l'utilisateur fais une mauvaise saisie
     if (colors.value === "" || quantity.value <= 0 || quantity.value > 100) {
-       //alors il aura une alerte pour corriger
+      //alors il aura une alerte pour corriger
       alert("Choisissez une couleur ou une quantité d'article entre 1 et 100");
     } else {
       //sinon j'appel ma fonction qui enregistre dans le localstorage
       ajoutProduit(produit);
       //je fais une alerte a l'utilisateur pour confirmer l'ajout au panier (l'envoie au localstorage)
-      alert("Article(s) ajouté au panier avec succes"); 
+      alert("Article(s) ajouté au panier avec succes");
     }
   });
 };
@@ -98,7 +102,7 @@ const detailProduit = (tabPanier) => {
 
 // fonction pour stocké la couleur et la quantité
 const getUniqueKey = (produit) => {
-  return produit.id + "-" + produit.color; 
+  return produit.id + "-" + produit.color;
 };
 
 // fonction pour gerer le contenu du local storage
@@ -108,19 +112,20 @@ const ajoutProduit = (produit) => {
 
   const commande = JSON.parse(localStorage.getItem(keyStorage)) || {};
   // le localstorage retourne ma clé en type string que je transforme du format JSON au format Javascript
-    // Si "panierBrut" était "null", alors j'ai un object vide en valeur par defaut
+  // Si "panierBrut" était "null", alors j'ai un object vide en valeur par defaut
 
   //j'appel ma fonction créer pour stocké l'id et la couleur
   const uniqueKey = getUniqueKey(produit);
 
   // J'acceder à mon produit
-   let produitExistant = commande[uniqueKey];
+  let produitExistant = commande[uniqueKey];
 
   //je crée une condition pour vérifier si le produit existe déjà
-    // si le produit existe avec l'id et la meme couleur
+  // si le produit existe avec l'id et la meme couleur
   if (produitExistant) {
     //ALORS j'incrémentant les quantités, j'utilise "number" pour transformer le string en nombre
-    const newQuantity = Number(produitExistant.quantity) + Number(produit.quantity);
+    const newQuantity =
+      Number(produitExistant.quantity) + Number(produit.quantity);
     //puis je repasse le nombre en string
     produitExistant.quantity = newQuantity.toString();
     commande[uniqueKey] = produitExistant;
