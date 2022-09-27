@@ -1,9 +1,10 @@
-// ------------------------------------------------------------------------------
-// ------------------- DECLARATION DES CONST ET VARIABLE --------------------------
-// ------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------- DECLARATION DES CONST ET VARIABLE -------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------
 
 //recuperation du lien
-    //const urlProduit = location.href;
+  //const urlProduit = location.href;
+
 //recuperation de l'id
   //je recherche l'id dans le lien
     //const leidUrl = new URL(urlProduit).search;
@@ -19,12 +20,13 @@ let image = document.querySelector("item__img");
 let imageURL = "";
 let imageAlt = "";
 
-// ----------------------------------------------------------------------------
-// --------------------------- APPEL A L'API ----------------------------------
-// ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------------------- APPEL A L'API -------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------
 
-fetch("http://localhost:3000/api/products/" + idUrl)
+
 //J'envoie une requete au serveur avec l'id et me renvoie une promesse
+fetch("http://localhost:3000/api/products/" + idUrl)
   .then((reponse) => reponse.json())
   .then((tabPanier) => {
     //j'appel ma fonction que m'affichera les details dans la page html
@@ -36,14 +38,17 @@ fetch("http://localhost:3000/api/products/" + idUrl)
     alert("Error"); 
   });
 
-// ----------------------------------------------------------------------------
-// ----------------------- CREATION DES FONCTIONS -----------------------------
-// ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------ CREATION DES FONCTIONS ---------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------
 
+//******************************** GESTION DU DOM ******************************
+
+// fonction qui affiche les details des produits
 const detailProduit = (tabPanier) => {
   //selection de la div qui stock l'image
   let [divImg] = document.getElementsByClassName("item__img");
-  //j'ajoute une image
+  //j'ajoute une image au DOM
   let imgCartProduit = document.createElement("img");
   imgCartProduit.setAttribute("src", tabPanier.imageUrl, "alt", tabPanier.altTxt);
   divImg.appendChild(imgCartProduit);
@@ -63,7 +68,6 @@ const detailProduit = (tabPanier) => {
     selectoption.innerHTML = optioncolor;
     selecteur.appendChild(selectoption);
   }
-
   //configuration de l'evenement au clic du bouton "ajouter au panier"
   boutonPanier.addEventListener("click", (event) => {
     let selectColors = document.getElementById("colors").value;
@@ -75,9 +79,8 @@ const detailProduit = (tabPanier) => {
       quantity: selectQuantity,
     };
 
-    //----------------------------------------------------------------------------
-    //------ je fais une condition pour verifier la saisie de l'utilisateur ------
-    //----------------------------------------------------------------------------
+    //****** je fais une condition pour verifier la saisie de l'utilisateur *********
+
     //si l'utilisateur fais une mauvaise saisie
     if (colors.value === "" || quantity.value <= 0 || quantity.value > 100) {
        //alors il aura une alerte pour corriger
@@ -91,17 +94,14 @@ const detailProduit = (tabPanier) => {
   });
 };
 
-// ----------------------------------------------------------------------------
-//-------------------------- ENVOIE AU LOCAL STORAGE --------------------------
-// ----------------------------------------------------------------------------
+//************************** GESTION DU LOCAL STORAGE **************************
 
-// je crée une fonction unique qui me permet de stocké le contenu dans un object
+// fonction pour stocké la couleur et la quantité
 const getUniqueKey = (produit) => {
-  // cette variable me retourne l'ID et la coleur
   return produit.id + "-" + produit.color; 
 };
 
-//je crée une fonction pour gerer le stockage dans le localstorage
+// fonction pour gerer le contenu du local storage
 const ajoutProduit = (produit) => {
   // Je prépare ma recupération de ma clé "commande" depuis le local storage
   const keyStorage = "commande";

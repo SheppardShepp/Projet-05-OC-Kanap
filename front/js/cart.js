@@ -1,55 +1,45 @@
-// ----------------------------------------------------------------------------
-/* -------------------------APPEL AU LOCAL STORAGE-------------------------- */
-// ----------------------------------------------------------------------------
-const keyStorage = "commande";
-// Je prépare ma recupération de ma clé "commande" depuis le local storage
+// ---------------------------------------------------------------------------------------------------------------------------------
+// ----------------------------------------- DECLARATION DES CONST ET VARIABLE -----------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------
 
-const commande = JSON.parse(localStorage.getItem(keyStorage)) || {};
+
+//recupération de ma clé "commande" depuis le local storage
+const keyStorage = "commande";
+
 // le localstorage retourne ma clé en type string que je transforme du format JSON au format Javascript
 // Si "panierBrut" était "null", alors j'ai un object vide en valeur par defaut
+const commande = JSON.parse(localStorage.getItem(keyStorage)) || {};
 
-let tabCmd = Object.values(commande);
 //Object.values me renvoie un tableau de l'objet "commande"
-
-
-// ----------------------------------------------------------------------------
-/* -------------------------APPEL AU LOCAL STORAGE-------------------------- */
-// ----------------------------------------------------------------------------
+let tabCmd = Object.values(commande);
 let totalQty = document.querySelector("#totalQuantity");
 let totalPrice = document.querySelector("#totalPrice");
-//variable necessaire pour le total du panier
-//j'identify mes 2 id de la page html
-
 let panierTotalPrix = 0;
 let panierTotalQuantité = 0;
-//variable necessaire pour le calcul du panier
 
 
-// ----------------------------------------------------------------------------
-/* ------------------------DECLARATION DES FONCTIONS------------------------ */
-// ----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------- DECLARATION DES FONCTIONS --------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------
+
 //Fonction de création du panier
 const addPanier = () => {
-  //je créer une fonction qui recupere les informations dans le local storage, et dans l'api
-  //je recupere dans le localstrorage l'id, la couleur et la quantité
-  //je recupere dans l'api le nom, le prix, l'image, la description d'image et de l'article
-  // puis j'injecte le tout dans le html
+  // je crée une boucle pour parcourir les article stocké dans le localstorage
   for (const panier of tabCmd) {
-    // je crée une boucle pour parcourir les article stocké dans le localstorage
-    fetch("http://localhost:3000/api/products/" + panier.id) //J'envoie une requete au serveur avec l'id
+    //J'envoie une requete au serveur avec l'id
+    fetch("http://localhost:3000/api/products/" + panier.id)
       .then((reponse) => reponse.json())
       .then((tabPanier) => {
         let sectionPanier = document.getElementById("cart__items");
-        //je lui injecte un contenu en recupérant les info soit dans le local soit dans l'api
         //je crée l'article
         const article = document.createElement("article");
         //je lui ajoute le class
         article.classList.add("cart__item");
         //je lui attribu des data
         article.setAttribute("data-id", "{product-ID}")
-        //je lui attribu des data
         article.setAttribute("data-color", "{product-color}")
         //je rajoute le contenu de l'article
+        //je recuepre les ifnormation dans l'api et dans le local storage
         article.innerHTML = ` <div class="cart__item__img">
                                 <img src="${tabPanier.imageUrl}" alt="${tabPanier.altTxt}">
                               </div>
@@ -72,11 +62,7 @@ const addPanier = () => {
         //je declare que sectionPanier est le parent de article
         sectionPanier.appendChild(article);
 
-
-        // --------------------------------------------------------------------
-        /* -------------------AFFICHAGE DU TOTAL PANIER--------------------- */
-        // --------------------------------------------------------------------
-
+        // ***************** AFFICHAGE DU TOTAL PANIER ****************************
         //j'addition les quantité de chaque article dans le panier
         //parseInt analyse une chaîne de caractère pour renvoyer un nombre entier
         panierTotalQuantité += parseInt(panier.quantity);
@@ -87,50 +73,40 @@ const addPanier = () => {
         //je l'integre au html
         totalPrice.textContent = panierTotalPrix;
 
-
-        // --------------------------------------------------------------------
-        /* ----------------------MODIFICATION DU PANIER--------------------- */
-        // --------------------------------------------------------------------
-
+        // ********************* MODIFICATION DU PANIER ****************************
         //j'identifie mon input
         let [canap] = article.getElementsByTagName("input");
-
         //j'appel ma fonction pour la modification du panier
         modifPanier(canap, tabPanier._id, panier.color);
 
-        // --------------------------------------------------------------------
-        /* -----------------------SUPPRESSION DU PANIER--------------------- */
-        // --------------------------------------------------------------------
-
+        // ********************* SUPPRESSION DU PANIER ****************************
         //j'identifie mon bouton "supprimer"
         let [btnSupprimer] = article.getElementsByClassName("deleteItem")
-
-         //j'appel ma fonction pour supprimer un article du panier
-         deletePanier(btnSupprimer, tabPanier._id, panier.color)
-
-        // --------------------------------------------------------------------
-        // --------------------------------------------------------------------
+        //j'appel ma fonction pour supprimer un article du panier
+        deletePanier(btnSupprimer, tabPanier._id, panier.color)
       })
+      // En cas de probleme
       .catch((error) => {
-        // En cas de probleme
         // j'ajoute un message d'erreur dans la console qui me renvera l'erreur en question.
         console.log(error); 
       });
   }
+  
+  //j'appel ma fonction pour mettre a jour mon DOM
   updateDom(tabCmd)
 };
-//j'appel ma fonction
-addPanier();
+
+// ************************** GESTION DU PANIER *********************************
 
 //fonction pour la modification du panier
 function modifPanier (canap, id, color) {
-  //j'ecouter l'evenement a la modification de "value"
+  //j'ecouter l'evenement a la modification de la quantité
   canap.addEventListener('change', function (event) {
     // recup quantité
     const newqty = event.target.value;
-    // 1 - Updtae local storage
+    // 1 - mise a jour du local storage
     const commandes = majStorage(id, color, newqty)
-    // 2 - Update dom
+    // 2 - mise a joru du DOM
     updateDom(commandes); 
   })
 }
@@ -139,71 +115,73 @@ function modifPanier (canap, id, color) {
 function deletePanier(btnSupprimer, id, color) {
   //j'ecouter l'evenement au clic sur le bouton supprimer
   btnSupprimer.addEventListener('click', function () {
+    //j'appel ma fonction de suppression dans le storage
     deleteStorage(id, color)
+    //je supprime l'article du DOM et du storage
     btnSupprimer.closest("article").remove(commande)
   })
 }
 
-//fonction pour supprimer un article du panier
-function deleteStorage (id, color){
-  //je recupere un objet avec les info du local storage
-  let deleteCommand = recupStorage()
-  //je converti l'objet de mon local en tableau
-  let tabDeleteCommand = Object.entries(deleteCommand)
+// ************************** GESTION DU STORAGE *********************************
 
-  let newCart = {}
-  tabDeleteCommand.forEach(([uniqueKey, item]) => {
-    if(item.id != id || item.color != color) {
-      newCart[uniqueKey] = item 
-    }
-    // let objetTabDeleteCommand = Object.assign({}, tabDeleteCommand);
-    //   console.log(objetTabDeleteCommand);
-    localStorage.setItem(keyStorage, JSON.stringify(newCart));
-
-  })
-  updateDom(newCart); 
-}
-
-//fonction pour appeller le contenu de mon localstorage
+//fonction pour recuperer le contenu de mon local storage
 function recupStorage () {
   return JSON.parse(localStorage.getItem(keyStorage))
 }
 
 //fonction pour mettre a jour mon local storage
 function majStorage (id, color, newqty) {
-  // - recuprer les commands
-  let commandes = recupStorage();
-  // - trouver la commande (id + couleur)
+  // - recuperer les donné de la commande
+  let updateStorage = recupStorage();
+  // j'identifie la commande (id + couleur)
   let uniqueKey = id + '-' + color;
-  let commande = commandes[uniqueKey];
-  // - modifier la quantité
+  let commande = updateStorage[uniqueKey];
+  // je modifie la quantité
   commande.quantity = newqty;
-  // - update les commandes
-  commandes[uniqueKey] = commande;
-  // - mettre a jour le local storage
-  localStorage.setItem(keyStorage, JSON.stringify(commandes));
-
-  return commandes;
+  // je maj les donnée du tableau a jour
+  updateStorage[uniqueKey] = commande;
+  // je met a jour le local storage
+  localStorage.setItem(keyStorage, JSON.stringify(updateStorage));
+  //je retourne pour avoir le resultat de la mise a jour
+  return updateStorage;
 }
+
+//fonction pour supprimer un article du local storage
+function deleteStorage (id, color){
+  //je recupere un objet avec les info du local storage
+  let deleteCommand = recupStorage()
+  //je converti l'objet en tableau
+  let tabDeleteCommand = Object.entries(deleteCommand)
+  //je créer un objet vide
+  let newCart = {}
+  //je fais une recherche dans le tableau 
+  tabDeleteCommand.forEach(([uniqueKey, item]) => {
+    if(item.id != id || item.color != color) {
+      newCart[uniqueKey] = item 
+    }
+    //je met a jour le storage
+    localStorage.setItem(keyStorage, JSON.stringify(newCart));
+  })
+  //j'appel ma fonction pour al mise a jour du DOM
+  updateDom(newCart); 
+}
+
+// **************************** GESTION DU DOM ***********************************
 
 //fonction pour la mise a jour du DOM
 function updateDom (commandes) {
+  //je fais un tableau "commandes"
   let cmds = Object.values(commandes)
+  //j'initialise mes valeurs a zéro
   let ttStorageQty = 0;
   let ttStoragePrix = 0;
-
-    //ajout du prix global dans le html
-    totalPrice.textContent = ttStoragePrix
-
+  //ajout du prix global dans le html
+  totalPrice.textContent = ttStoragePrix
 
   for (let i = 0; i < cmds.length; i++) {
     const { id, quantity } = cmds[i];
     //Calcul de quantité de produit du panier
     ttStorageQty += parseInt(quantity);
-    // if (ttStorageQty === 0 || ttStorageQty === null) {
-    //   ttStoragePrix
-    // }
-
     //calcul du prix de chaque article dans le panier
     fetch("http://localhost:3000/api/products/" + id)
     .then((reponse) => reponse.json())
@@ -212,19 +190,43 @@ function updateDom (commandes) {
       totalPrice.textContent = ttStoragePrix
     })
   }
-
-    //ajout des quantité globale au html
-    totalQty.textContent = ttStorageQty
-
+  //ajout des quantité globale au html
+  totalQty.textContent = ttStorageQty
 }
 
+// ********************* VALIDATION SAISIE FORMULAIRE *****************************
 
-// --------------------------------------------------------------------
-/* -----------------------GESTION DU FORMULAIRE--------------------- */
-// --------------------------------------------------------------------
+const validForm = (input, regex) =>{
+  //variable qui me permet de tester mes saisie avec les regex
+  let testSaisieInput = regex.test(input.value);
+  //variable qui me permet de faire un message d'erreur en cas de mauvaise saisie
+  let messError = input.nextElementSibling;
+  if (testSaisieInput) {
+    messError.textContent = "Saisie validé."; 
+    messError.style.color = "green";
+  }else {
+    messError.textContent = "Saisie non valide. Merci de vérifier votre saisie.";
+    messError.style.color = "red";
+  }
+  return testSaisieInput
+};
+
+// ---------------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------APPEL DE LA FONCTION-------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------
+
+//j'appel ma fonction pour afficher on panier
+addPanier();
+
+// ---------------------------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------GESTION DU FORMULAIRE--------------------------------------------------------- 
+// ---------------------------------------------------------------------------------------------------------------------------------
+
+// préparation des regex pour la saisie du formulaire
 let regexText = new RegExp("^[A-zÀ-ú \-]+$");
 let regexAdress = new RegExp("^[0-9a-zA-Zà-ú '-._]{5,100}$");
 let regexEmail = new RegExp("^[a-zA-Z0-9_.-]+@{1}[a-zA-Z.-_]+[.]{1}[a-z]{2,10}$");
+// j'initialise mes champs de saisie sur false
 let validator = {
   prenom: false, 
   nom: false, 
@@ -232,9 +234,12 @@ let validator = {
   ville: false, 
   email: false
 }
-//j'identifie le formulaire
+// **************************** SAISIE DU FORMULAIRE ***********************************
+//j'identifie le champs de saisie
 let prenom = document.getElementById("firstName");
+// j'écoute l'evenement au changement dans la saisie
 let prenomInput = prenom.addEventListener("change", function () {
+  //pour chaque saisie je test son contenu avec une fonction
   validator.prenom = validForm(prenom, regexText);
 })
 
@@ -258,30 +263,16 @@ let mailInput = mail.addEventListener("change", function () {
   validator.email = validForm(mail, regexEmail);
 })
 
-// ********************* fonction formulaire *****************************
-const validForm = (input, regex) =>{
-  let testSaisieInput = regex.test(input.value);
-  let messError = input.nextElementSibling;
-  if (testSaisieInput) {
-    messError.textContent = "Saisie validé."; 
-    messError.style.color = "green";
+// **************************** VALIDATION DE LA COMMANDE ***********************************
 
-  }else {
-    messError.textContent = "Saisie non valide. Merci de vérifier votre saisie.";
-    messError.style.color = "red";
-  }
-  return testSaisieInput
-};
-// --------------------------------------------------------------------
-/* -----------------------CONFIRMATION COMMANDE--------------------- */
-// --------------------------------------------------------------------
-
+//je bloque la soumission du formaulaire initialement par default
 document.querySelectorAll('form').forEach(form => {
   form.addEventListener('submit', (e) => {
     e.preventDefault()
   })
 })
 
+//je prépare l'action au clic du bouton "commander"
 let btnCommander = document.getElementById("order");
 btnCommander.addEventListener ("click", function () {
   //création de l'objet qui contient les infos clients
@@ -292,32 +283,38 @@ btnCommander.addEventListener ("click", function () {
     city: ville.value,
     email: mail.value,
   };
-  //mon tableau de produit dans le local storage
+  //je recupere les donnee du local storage
   let storage = Object.values(recupStorage())
+  //je créer un tableau vide en vue d'y injecter des deonnées
   let products = []
   for (let i = 0; i < storage.length; i++) {
+    //j'extrait les id des info de mon local storage
     const idProduit = storage[i].id;
+    //j'injecte les id dans le tableau
     products.push(idProduit)
   }
 
   //je créer mon objet "contact"
   const objetContact = {contact, products}
 
-  //*************j'envoie les donnée au serveur*****************
+  //condition pour verifier si mon formulaire est remplis correctement avant l'envoie
   if (!validator.prenom || !validator.nom || !validator.address || !validator.ville || !validator.email) {
     //ALORS j'envoie une alerte a l'utilisateur
     alert("Merci de respecter les champs de saisie.")  
     //SINON
   }else {
+    //j'envoie les donnees a l'API
     fetch("http://localhost:3000/api/products/order", {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
+    //j'envoie mon objet au format JSON
     body: JSON.stringify(objetContact)
   })
     .then((reponse) => reponse.json())
     .then((data) => {
+    //je renvoie vers la page confirmation
     document.location.href = "./confirmation.html?id=" + data.orderId;
     })
     .catch((error) => {
