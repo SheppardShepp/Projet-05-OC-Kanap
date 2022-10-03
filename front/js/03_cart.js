@@ -326,7 +326,7 @@ btnCommander.addEventListener("click", function () {
       })
       .catch((error) => {
         // En cas de probleme
-        // j'ajoute un message d'erreur dans le consolequi me renvera l'erreur en question.
+        // j'ajoute un message d'erreur dans le console qui me renvera l'erreur en question.
         console.log(error);
       });
   }
