@@ -6,6 +6,7 @@
 
 - [Présentation du projet](#présentation)
 - [Aperçu du projet](#projet)
+- [Spécification du projet](#specification)
 - [Installation de l'API](#api)
 - [Utilisation de la parti Front](#utilisation)
 
@@ -53,6 +54,21 @@ Utilisation : <img height="30" src="https://raw.githubusercontent.com/github/exp
 Aperçu :
 
 <div align="center"><img height="300" src="https://i31.servimg.com/u/f31/13/52/99/79/kanap-10.png"> <img height="300" src="https://i31.servimg.com/u/f31/13/52/99/79/kanap10.jpg"> <img height="300" src="https://i31.servimg.com/u/f31/13/52/99/79/kanap_11.png"> <img height="300" src="https://i31.servimg.com/u/f31/13/52/99/79/kanap_10.png"> <img height="300" src="https://i31.servimg.com/u/f31/13/52/99/79/kanap_12.png"></div>
+
+---
+
+## :gear: Les Spécification du projets <a name = "specification"></a>
+
+- Une page d’accueil montrant tous les articles disponibles à la vente.
+- Une page “produit” qui affiche les détails du produit sur lequel l'utilisateur a cliqué depuis la page d’accueil. Depuis cette page, l’utilisateur peut électionner une quantité, une couleur, et ajouter le produit à son panier.
+- Une page “panier”. Celle-ci contient plusieurs parties :
+  - Un résumé des produits dans le panier,
+  - Le prix total et la possibilité de modifier la quantité d’un produit sélectionné. Le total du panier devra bien se mettre à jour.
+  - La possiblité de supprimer un produit. Le produit devra donc disparaître de la page.
+  - Le prix des articles ne doit pas être stocker en local. Les données stockées en local ne sont pas sécurisées et l’utilisateur pourrait alors modifier le prix lui-même.
+  - Un formulaire permettant de passer une commande. Les données du formulaire doivent être correctes et bien formatées avant d'être renvoyées au back-end. Par exemple, pas de chiffre dans un champ prénom ou une adresse e-mail ne contenant pas de symbole “@”. En cas de problème de saisie, un message d’erreur devra être affiché en dessous du champ correspondant.
+- Une page “confirmation” :
+  - Un message de confirmation de commande, remerciant l'utilisateur pour sa commande, et indiquant l'identifiant de commande envoyé par l’API.
 
 ---
 
