@@ -33,7 +33,8 @@ J'ai donc comme mission de :
 Lien du plan de test : [Plan de test d’acceptation](https://drive.google.com/file/d/1YCaZEBYB5Bv1_KzNhDk2pI_znE_GXTT0/view?usp=sharing)
 
 Lien des spécifications fonctionnelles et
-techniques du site : [Plan de test d’acceptation](https://drive.google.com/file/d/1Li7t3oHYFF6fQxA4WRhB6nbiQ2DvER6O/view?usp=sharing)
+techniques du site : [Les spécifications fonctionnelles et
+techniques](https://drive.google.com/file/d/1Li7t3oHYFF6fQxA4WRhB6nbiQ2DvER6O/view?usp=sharing)
 
 ---
 
