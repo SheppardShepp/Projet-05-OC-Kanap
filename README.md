@@ -5,6 +5,7 @@
 ## 📝 Sommaires
 
 - [Présentation du projet](#présentation)
+- [Aperçu du projet](#projet)
 - [Installation de l'API](#api)
 - [Utilisation de la parti Front](#utilisation)
 
@@ -40,6 +41,18 @@ techniques du site : [Plan de test d’acceptation](https://drive.google.com/fil
 - <img height="30" src="https://i31.servimg.com/u/f31/13/52/99/79/logo_h11.png"> HTML/CSS
 
 - <img height="30" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png"> Javascript
+
+---
+
+## ⛏️ Aperçu du projet <a name = "projet"></a>
+
+Objectif : construire un site e-commerce en JavaScript.
+
+Utilisation : <img height="30" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png">
+
+Aperçu :
+
+<div align="center"><img height="300" src="https://i31.servimg.com/u/f31/13/52/99/79/kanap-10.png"> <img height="300" src="https://i31.servimg.com/u/f31/13/52/99/79/kanap10.jpg"> <img height="300" src="https://i31.servimg.com/u/f31/13/52/99/79/kanap_11.png"> <img height="300" src="https://i31.servimg.com/u/f31/13/52/99/79/kanap_10.png"> <img height="300" src="https://i31.servimg.com/u/f31/13/52/99/79/kanap_12.png"></div>
 
 ---
 
