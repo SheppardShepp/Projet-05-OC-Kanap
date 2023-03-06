@@ -15,7 +15,7 @@
 Ce projet a eu pour but de construire un site e-commerce en JavaScript.
 
 L'objectif pour moi, fus l'apprentissage du langage JavaScript afin de rendre dynamique un site internet e-commerce en le connectant à une API. N'ayant pas encore appris à ce stade la construction d'une API celle-ci me fus fournie. J'avais également l'interdiction d'utiliser tout framework ou librairie JavaScript (React, Angular, Vue ou jQuery, par exemple).
-Toute la parti HTML/CSS ainsi que l'API me fus donc fournis, j'avais donc juste à injecter la parti JavaScript pour rendre le tout fonctionnel.
+Toute la partie HTML/CSS ainsi que l'API me fus donc fournis, j'avais donc juste à injecter la partie JavaScript pour rendre le tout fonctionnel.
 
 ---
 
@@ -60,12 +60,12 @@ Aperçu :
 ## :gear: Les Spécification du projets <a name = "specification"></a>
 
 - Une page d’accueil montrant tous les articles disponibles à la vente.
-- Une page “produit” qui affiche les détails du produit sur lequel l'utilisateur a cliqué depuis la page d’accueil. Depuis cette page, l’utilisateur peut électionner une quantité, une couleur, et ajouter le produit à son panier.
+- Une page “produit” qui affiche les détails du produit sur lequel l'utilisateur a cliqué depuis la page d’accueil. Depuis cette page, l’utilisateur peut sélectionner une quantité, une couleur, et ajouter le produit à son panier.
 - Une page “panier”. Celle-ci contient plusieurs parties :
   - Un résumé des produits dans le panier,
   - Le prix total et la possibilité de modifier la quantité d’un produit sélectionné. Le total du panier devra bien se mettre à jour.
-  - La possiblité de supprimer un produit. Le produit devra donc disparaître de la page.
-  - Le prix des articles ne doit pas être stocker en local. Les données stockées en local ne sont pas sécurisées et l’utilisateur pourrait alors modifier le prix lui-même.
+  - La possibilité de supprimer un produit. Le produit devra donc disparaître de la page.
+  - Le prix des articles ne doit pas être stocké en local. Les données stockées en local ne sont pas sécurisées et l’utilisateur pourrait alors modifier le prix lui-même.
   - Un formulaire permettant de passer une commande. Les données du formulaire doivent être correctes et bien formatées avant d'être renvoyées au back-end. Par exemple, pas de chiffre dans un champ prénom ou une adresse e-mail ne contenant pas de symbole “@”. En cas de problème de saisie, un message d’erreur devra être affiché en dessous du champ correspondant.
 - Une page “confirmation” :
   - Un message de confirmation de commande, remerciant l'utilisateur pour sa commande, et indiquant l'identifiant de commande envoyé par l’API.
@@ -74,7 +74,7 @@ Aperçu :
 
 ## :gear: Installation de l'API <a name = "api"></a>
 
-Cloner le dépot git via un éditeur de code ou le télécharger puis le décompresser sur votre machine.
+Cloner le dépôt git via un éditeur de code ou le télécharger puis le décompresser sur votre machine.
 Une fois le dossier ouvert avec un éditeur de code (comme VSCode), ouvrir et saisir dans le terminal les commandes suivante :
 
 - "cd back"
@@ -84,6 +84,6 @@ Une fois le dossier ouvert avec un éditeur de code (comme VSCode), ouvrir et sa
 Par défaut le serveur sera lancé sur le port 3000 ( http://localhost:3000 ). La console affiche "Listening on port 3000" si le serveur c'est lancé avec succes.
 Si le serveur s'exécute sur un autre port pour une raison quelconque, cela est indiqué dans la console au démarrage du serveur, par ex : "Listening on port 3001".
 
-## :gear: Utilisation de la parti Front <a name = "utilisation"></a>
+## :gear: Utilisation de la partie Front <a name = "utilisation"></a>
 
-Une fois l'API fonctionnel, il sufffit de lancer le site depuis le fichier HTML ou le "live server" depuis VSCode par exemple.
+Une fois l'API fonctionnel, il suffit de lancer le site depuis le fichier HTML ou le "live server" depuis VSCode par exemple.
